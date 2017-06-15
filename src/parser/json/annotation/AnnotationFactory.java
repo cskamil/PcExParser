@@ -1,7 +1,5 @@
 package parser.json.annotation;
 
-import parser.AnnotationMissingSymbolException;
-
 public class AnnotationFactory {
 	
 	public static Annotation createAnnotation(String content) {

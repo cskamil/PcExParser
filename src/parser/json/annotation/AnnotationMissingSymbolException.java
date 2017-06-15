@@ -1,7 +1,5 @@
-package parser;
+package parser.json.annotation;
 
-
-import parser.json.annotation.AnnotationType;
 
 public class AnnotationMissingSymbolException extends RuntimeException {
 

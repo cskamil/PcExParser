@@ -1,5 +1,7 @@
 package parser;
 
-public interface LanguageParser {
+import parser.json.entity.Program;
 
+public interface LanguageParser {
+    Program parse();
 }

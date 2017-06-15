@@ -8,9 +8,9 @@ public class ParserFactory {
 		String fileName = path.getFileName().toString();
 		
 		if(fileName.endsWith(Language.JAVA.getExtension())) {
-			return new JavaParser();
+			return new JavaParser(path);
 		} else if(fileName.endsWith(Language.PYTHON.getExtension())) {
-			return new PythonParser();
+			return new PythonParser(path);
 		} 
 		
 		throw new RuntimeException("Unsupported file type: " + path.toString());
