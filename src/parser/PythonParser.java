@@ -11,7 +11,21 @@ public class PythonParser extends AbstractLanguageParser {
     }
 
     @Override
-    protected Program parsePath(Path path) {
-        return null;
+    protected boolean isLineComment(String line) {
+        return line.trim().startsWith("#");
+    }
+
+    @Override
+    protected boolean isLineCode(String line) {
+        line = line.trim();
+
+        return  !line.isEmpty() &&
+                !line.startsWith("import") &&
+                !line.startsWith("'''");
+    }
+
+    @Override
+    protected void afterParse(Program program) {
+        program.setLanguage(Language.PYTHON);
     }
 }

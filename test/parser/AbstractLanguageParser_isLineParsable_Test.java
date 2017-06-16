@@ -11,11 +11,11 @@ import java.nio.file.Path;
 
 public class AbstractLanguageParser_isLineParsable_Test {
 
-	private TestLanguageParser parser;
+	private JavaParser parser;
 
 	@Before
-	private void initialize() {
-		parser = new TestLanguageParser(null);
+	public void initialize() {
+		parser = new JavaParser(null);
 	}
 	
 	@Test
@@ -23,13 +23,14 @@ public class AbstractLanguageParser_isLineParsable_Test {
 		String line = "* not parsable";
 		assertFalse(parser.isLineComment(line));
 	}
-	
-	@Test
-	public void whenStringLineIsJavadocCommentLineAndHasCharAt_then_true() {
-		String line = "* @ parsable";
-		assertTrue(parser.isLineComment(line));
-	}
-	
+
+	//Move it to abstract test
+//	@Test
+//	public void whenStringLineIsJavadocCommentLineAndHasCharAt_then_true() {
+//		String line = "* @ parsable";
+//		assertTrue(parser.isLineComment(line));
+//	}
+
 	@Test
 	public void whenStringLineIsRegularCommentLine_then_true() {
 		String line = "//";
@@ -59,17 +60,4 @@ public class AbstractLanguageParser_isLineParsable_Test {
 		String line = "* @helpDescription(A list";
 		assertTrue(parser.isLineParsable(line));
 	}
-
-	private class TestLanguageParser extends AbstractLanguageParser {
-
-		public TestLanguageParser(Path path) {
-			super(path);
-		}
-
-		@Override
-		protected Program parsePath(Path path) {
-			return null;
-		}
-	}
-
 }

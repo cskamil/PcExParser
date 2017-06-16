@@ -1,9 +1,9 @@
 package parser.json.entity;
 
+import parser.Language;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 
 /**
@@ -14,6 +14,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 public class Program extends AbstractEntity {
 	
+	private Language language;
 	private String activityName;
 	private String goalDescription;
 	private String correctOutput;
@@ -26,6 +27,11 @@ public class Program extends AbstractEntity {
 		this.distractorList = new ArrayList<Tile>();
 		this.lineList = new ArrayList<Line>();
 		this.blankLineList = new ArrayList<Tile>();
+	}
+
+	public Program(String goalDescription, String correctOutput) {
+		this.goalDescription = goalDescription;
+		this.correctOutput = correctOutput;
 	}
 	
 	public void addDistractor(Tile tile) {
@@ -46,11 +52,7 @@ public class Program extends AbstractEntity {
 							.findFirst().get();
 	}
 	
-	public Program(String goalDescription, String correctOutput) {
-		this.goalDescription = goalDescription;
-		this.correctOutput = correctOutput;
-	}
-	
+
 	public String getGoalDescription() {
 		return goalDescription;
 	}
@@ -76,12 +78,19 @@ public class Program extends AbstractEntity {
 		this.lineList = lineList;
 	}
 
-	@JsonIgnore
 	public String getActivityName() {
 		return activityName;
 	}
 
 	public void setActivityName(String activityName) {
 		this.activityName = activityName;
+	}
+
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
 	}
 }

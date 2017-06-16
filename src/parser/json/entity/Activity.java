@@ -1,5 +1,7 @@
 package parser.json.entity;
 
+import parser.Language;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,8 @@ import java.util.List;
  *
  */
 public class Activity extends AbstractEntity {
-	
+
+	private Language language;
 	private String activityName;
 	private List<Program> activityGoals;
 	
@@ -44,4 +47,11 @@ public class Activity extends AbstractEntity {
 		return "[activityName="+ activityName + ",#ofGoals=" + activityGoals.size()+"]";
 	}
 
+	public Language getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(Language language) {
+		this.language = language;
+	}
 }

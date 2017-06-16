@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,34 +33,29 @@ public abstract class AbstractLanguageParser implements LanguageParser {
 
     @Override
     public Program parse() {
-       return parsePath(path);
+        Program program = parsePath(path);
+        afterParse(program);
+        return program;
     }
 
-    protected Program parsePath(Path path) {
-        List<Line> lineList = getParsableLines(path);
+    private Program parsePath(Path path) {
+        List<Line> lineList = getLines(path);
 
-        List<Line> programLines = new ArrayList<Line>();
-        List<Line> commentLines = new ArrayList<Line>();
+        Map<Boolean, List<Line>> codeTypeMap = lineList.stream().collect(Collectors.partitioningBy(line -> isAnnotatedLine(line)));
 
-        lineList.stream()
-                .forEachOrdered(line -> {
-                    if(line.getContent().contains("@")) {
-                        commentLines.add(line);
-                    } else {
-                        programLines.add(line);
-                    }
-                });
+        List<Line> programLines = codeTypeMap.get(false);
+        List<Line> annotatedLines = codeTypeMap.get(true);
 
         Program program = new Program();
         program.setActivityName(path.getName(path.getNameCount()-2).toString());
         program.setLineList(programLines);
 
-        parseCommentLines(commentLines, program);
+        parseAnnotatedLines(annotatedLines, program);
 
         return program;
     }
 
-    protected List<Line> getParsableLines(Path path) {
+    private List<Line> getLines(Path path) {
         List<Line> lineList = new ArrayList<Line>();
 
         try (Stream<String> stream = Files.lines(path)) {
@@ -84,28 +80,40 @@ public abstract class AbstractLanguageParser implements LanguageParser {
     }
 
     /**
-     * A line is parsable if it is annotated, comment or code
+     * Template method for subclasses to perform operations on parsed program object.
+     * @param program
+     */
+    protected void afterParse(Program program) {
+        //Intentionally left blank
+    }
+
+    /**
+     * A line is parsable if it is annotated, comment or code.
      * @param line
      * @return
      */
-    protected boolean isLineParsable(String line) {
+    boolean isLineParsable(String line) {
        return isAnnotatedLine(line) || isLineComment(line) || isLineCode(line);
     }
 
-    protected boolean isAnnotatedLine(String line) {
+    private boolean isAnnotatedLine(String line) {
         return line.contains(ANNOTATION_TAG);
+    }
+
+    private boolean isAnnotatedLine(Line line) {
+        return isAnnotatedLine(line.getContent());
     }
 
     protected abstract boolean isLineComment(String line);
 
     protected abstract boolean isLineCode(String line);
 
-    protected void parseCommentLines(List<Line> commentLines, final Program program) {
-        commentLines.stream().forEachOrdered(commentLine -> {
+    private void parseAnnotatedLines(List<Line> annotatedLines, final Program program) {
+        annotatedLines.stream().forEachOrdered(annotatedLine -> {
             try {
-                Annotation annotation = AnnotationFactory.createAnnotation(commentLine.getContent());
+                Annotation annotation = AnnotationFactory.createAnnotation(annotatedLine.getContent());
 
-                if(commentLine.getNumber() == 0) { //Class Level Comments
+                if(annotatedLine.getNumber() == 0) { //Class Level Comments
                     if(annotation.getType() == AnnotationType.GOAL_DESCRIPTION) {
                         program.setGoalDescription(annotation.getText());
                     } else if(annotation.getType() == AnnotationType.CORRECT_OUTPUT) {
@@ -115,7 +123,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
                         program.addDistractor(distractorTile);
                     }
                 } else { //Comments inside class definition
-                    Line commentedLine = program.findLineByNumber(commentLine.getNumber() + 1);
+                    Line commentedLine = program.findLineByNumber(annotatedLine.getNumber() + 1);
 
                     if(annotation.getType() == AnnotationType.HELP_DESCRIPTION) {
                         commentedLine.setComment(annotation.getText());
@@ -124,15 +132,13 @@ public abstract class AbstractLanguageParser implements LanguageParser {
                     }
                 }
             } catch (AnnotationMissingSymbolException e) {
-                System.err.println("Exception at comment parsing: ActivityName=" + program.getActivityName() + ", Goal=" + program.getGoalDescription() + ",line=" + commentLine.getContent());
+                System.err.println("Exception at comment parsing: ActivityName=" + program.getActivityName() + ", Goal=" + program.getGoalDescription() + ",line=" + annotatedLine.getContent());
                 throw e;
             }
-
         });
-
     }
 
-    protected Tile parseDistractorTile(Annotation annotation) {
+    private Tile parseDistractorTile(Annotation annotation) {
         String codeStartToken = "code(";
         String codeEndToken = "),";
         String helpStartToken = "helpDescription(";

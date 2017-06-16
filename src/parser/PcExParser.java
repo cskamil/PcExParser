@@ -34,32 +34,47 @@ public class PcExParser {
 //			
 //			PrintJSON.printJSON(submission);
 //			
-//		} catch (Exception e) {
+//		} catch (Exception e) j{
 //			e.printStackTrace();
 //		}
-		
-		PrintJSON.printJSON(parseDirectory("resources"));
-	}
-	
-	public static List<Activity> parseDirectory(String pathString) {
-		try (Stream<Path> pathStream = Files.walk(Paths.get(pathString))) {
-			 Map<String,List<Program>> activityProgramList = pathStream.filter(path -> Files.isRegularFile(path))
-					  							  .map(path -> ParserFactory.create(path).parse())
-					  							  .collect(Collectors.groupingBy(Program::getActivityName));
 
-			 List<Activity> activityList = activityProgramList.keySet().stream().map(activityName -> {
-				 Activity activity = new Activity();
-				 activity.setActivityName(activityName);
-				 activity.setActivityGoals(activityProgramList.get(activityName));
-				 
-				 return activity;
-			 }).collect(Collectors.toList());
-			
-			return activityList;
+		//TODO: Take path parameters from args
+		parseDirectory("resources").forEach((language, activities) -> {
+			//TODO: Compile&Run each program and create outputs.
+			PrintJSON.printJSONToFile("output/jsondata/" + language.name() + ".json", activities);
+		});
+	}
+
+	public static Map<Language,List<Activity>> parseDirectory(String pathString) {
+		try (Stream<Path> pathStream = Files.walk(Paths.get(pathString))) {
+			Map<Language, Map<String, List<Program>>> languageProgramMap = pathStream.filter(path -> Files.isRegularFile(path))
+					.map(path -> ParserFactory.create(path).parse())
+					.collect(Collectors.groupingBy(Program::getLanguage, Collectors.groupingBy(Program::getActivityName)));
+
+
+			return languageProgramMap.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey,
+							e -> mapProgramsToActivities(e.getKey(), e.getValue())));
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		
-		return Collections.emptyList();
+		return Collections.emptyMap();
+	}
+
+	/**
+	 * Creates an Activity for each map entry. Map key represents activity name and value represents goals.
+	 * @param activityProgramMap
+	 * @return List<Activity>
+	 */
+	private static List<Activity> mapProgramsToActivities(Language language, Map<String, List<Program>> activityProgramMap) {
+		return activityProgramMap.entrySet().stream().map(stringListEntry -> {
+			Activity activity = new Activity();
+			activity.setLanguage(language);
+			activity.setActivityName(stringListEntry.getKey());
+			activity.setActivityGoals(stringListEntry.getValue());
+			return activity;
+		}).collect(Collectors.toList());
 	}
 }

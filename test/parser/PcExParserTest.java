@@ -3,6 +3,7 @@ package parser;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
@@ -13,8 +14,8 @@ public class PcExParserTest {
 
 	@Test
 	public void test() throws FileNotFoundException {
-		List<Activity> resources = PcExParser.parseDirectory("resources");
-		PrintJSON.printJSON(resources);
+		Map<Language, List<Activity>> parsed = PcExParser.parseDirectory("resources");
+		PrintJSON.printJSON(parsed);
 	}
 
 }

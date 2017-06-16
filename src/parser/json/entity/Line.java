@@ -7,7 +7,7 @@ package parser.json.entity;
  *
  */
 public class Line extends AbstractEntity {
-	
+
 	private int number;
 	private String content;
 	private String comment;
@@ -50,5 +50,4 @@ public class Line extends AbstractEntity {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-
 }
