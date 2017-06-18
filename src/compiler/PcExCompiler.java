@@ -1,42 +1,31 @@
 package compiler;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
+import compiler.hackerearth.HackerEarthCaller;
+import compiler.hackerearth.response.HackerEarthResponse;
 import parser.json.entity.Program;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public class PcExCompiler {
 
-	public static String compile(Program program) {
+	public static HackerEarthResponse execute(Program program) {
+		Path path = Paths.get("output/executions/" + program.getLanguage().name() + "_" + program.getActivityName() + "_" + program.getFileName() + "_output.txt");
+		HackerEarthCaller caller = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783");
+		HackerEarthResponse response = caller.run(program);
+		System.out.println(response.responseContent);
+
 		try {
-			runProcess("jshell");
-//		      runProcess("javac test_examples/ArrayInitialization/ArrayInitialization1.java");
-//		      runProcess("java Main");
-		    } catch (Exception e) {
-		      e.printStackTrace();
-		    }
-		return null;
-	}
-
-	private static void runProcess(String command) throws Exception {
-		Process pro = Runtime.getRuntime().exec(command);
-		printLines(command + " stdout:", pro.getInputStream());
-		printLines(command + " stderr:", pro.getErrorStream());
-		pro.waitFor();
-		System.out.println(command + " exitValue() " + pro.exitValue());
-	}
-
-	private static void printLines(String name, InputStream ins) throws Exception {
-		String line = null;
-		BufferedReader in = new BufferedReader(new InputStreamReader(ins));
-		while ((line = in.readLine()) != null) {
-			System.out.println(name + " " + line);
+			Files.createDirectories(path.getParent());
+			Files.write(path, response.responseContent.getBytes(), StandardOpenOption.CREATE);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	}
-	
-	public static void main(String[] args) {
-		PcExCompiler.compile(null);
+
+		return response;
 	}
 
 }

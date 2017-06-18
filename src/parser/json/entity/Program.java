@@ -1,9 +1,11 @@
 package parser.json.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import parser.Language;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -16,6 +18,7 @@ public class Program extends AbstractEntity {
 	
 	private Language language;
 	private String activityName;
+	private String fileName;
 	private String goalDescription;
 	private String correctOutput;
 	private List<Line> lineList;
@@ -51,7 +54,11 @@ public class Program extends AbstractEntity {
 							.filter(line -> line.getNumber() == lineNumber)
 							.findFirst().get();
 	}
-	
+
+	@JsonIgnore
+	public String getSourceCode() {
+		return getLineList().stream().map(line -> line.getContent()).collect(Collectors.joining("\n"));
+	}
 
 	public String getGoalDescription() {
 		return goalDescription;
@@ -92,5 +99,13 @@ public class Program extends AbstractEntity {
 
 	public void setLanguage(Language language) {
 		this.language = language;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 }

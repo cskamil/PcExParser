@@ -1,5 +1,8 @@
 package parser;
 
+import compiler.PcExCompiler;
+import compiler.hackerearth.response.HackerEarthResponse;
+import parser.json.JSONUtils;
 import parser.json.entity.Activity;
 import parser.json.entity.Program;
 
@@ -25,30 +28,22 @@ import java.util.stream.Stream;
 public class PcExParser {
 	
 	public static void main(String[] args) {
-//		try (Stream<String> stream = Files.lines(Paths.get("resources/program1"))) {
-//			
-//			String collect = stream.collect(Collectors.joining("\\n"));
-//			
-//			Submission submission = new Submission();
-//			submission.setSourceCode(collect);
-//			
-//			PrintJSON.printJSON(submission);
-//			
-//		} catch (Exception e) j{
-//			e.printStackTrace();
-//		}
-
-		//TODO: Take path parameters from args
-		parseDirectory("resources").forEach((language, activities) -> {
-			//TODO: Compile&Run each program and create outputs.
-			PrintJSON.printJSONToFile("output/jsondata/" + language.name() + ".json", activities);
+		//TODO: Take path parameters from configuration file
+		parseDirectory(args[0]).forEach((language, activities) -> {
+			JSONUtils.writeObjectToFile(args[1] + "/" + language.name() + ".json", activities);
 		});
 	}
 
 	public static Map<Language,List<Activity>> parseDirectory(String pathString) {
 		try (Stream<Path> pathStream = Files.walk(Paths.get(pathString))) {
-			Map<Language, Map<String, List<Program>>> languageProgramMap = pathStream.filter(path -> Files.isRegularFile(path))
-					.map(path -> ParserFactory.create(path).parse())
+			Map<Language, Map<String, List<Program>>> languageProgramMap = pathStream
+					.filter(path -> Files.isRegularFile(path))
+					.map(path -> {
+						Program program = ParserFactory.create(path).parse();
+						HackerEarthResponse executeResponse = PcExCompiler.execute(program);
+						program.setCorrectOutput(executeResponse.runStatus.output);
+						return program;
+					})
 					.collect(Collectors.groupingBy(Program::getLanguage, Collectors.groupingBy(Program::getActivityName)));
 
 

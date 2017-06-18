@@ -27,7 +27,7 @@ public class JavaParser extends AbstractLanguageParser {
     }
 
     @Override
-    protected void afterParse(Program program) {
+    protected void postParse(Program program) {
         program.setLanguage(Language.JAVA);
     }
 }

@@ -34,7 +34,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
     @Override
     public Program parse() {
         Program program = parsePath(path);
-        afterParse(program);
+        postParse(program);
         return program;
     }
 
@@ -48,6 +48,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
 
         Program program = new Program();
         program.setActivityName(path.getName(path.getNameCount()-2).toString());
+        program.setFileName(path.getName(path.getNameCount()-1).toString());
         program.setLineList(programLines);
 
         parseAnnotatedLines(annotatedLines, program);
@@ -83,7 +84,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
      * Template method for subclasses to perform operations on parsed program object.
      * @param program
      */
-    protected void afterParse(Program program) {
+    protected void postParse(Program program) {
         //Intentionally left blank
     }
 
@@ -117,7 +118,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
                     if(annotation.getType() == AnnotationType.GOAL_DESCRIPTION) {
                         program.setGoalDescription(annotation.getText());
                     } else if(annotation.getType() == AnnotationType.CORRECT_OUTPUT) {
-                        program.setCorrectOutput(annotation.getText());
+                        //program.setCorrectOutput(annotation.getText());
                     } else if(annotation.getType() == AnnotationType.DISTRACTOR) {
                         Tile distractorTile = parseDistractorTile(annotation);
                         program.addDistractor(distractorTile);
