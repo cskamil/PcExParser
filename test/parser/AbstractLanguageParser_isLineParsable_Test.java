@@ -1,13 +1,10 @@
 package parser;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Before;
 import org.junit.Test;
-import parser.json.entity.Program;
 
-import java.nio.file.Path;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class AbstractLanguageParser_isLineParsable_Test {
 
