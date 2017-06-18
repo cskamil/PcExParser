@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import parser.json.JSONUtils;
-import parser.json.entity.Activity;
+import json.JSONUtils;
+import entity.Activity;
 
 public class PcExParserTest {
 

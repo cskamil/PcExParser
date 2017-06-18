@@ -2,7 +2,7 @@ package compiler;
 
 import compiler.hackerearth.HackerEarthCaller;
 import compiler.hackerearth.response.HackerEarthResponse;
-import parser.json.entity.Program;
+import entity.Program;
 
 import java.io.IOException;
 import java.nio.file.Files;

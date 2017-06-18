@@ -1,4 +1,4 @@
-package parser.json.entity;
+package entity;
 
 /**
  * 

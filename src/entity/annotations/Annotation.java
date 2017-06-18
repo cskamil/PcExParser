@@ -1,4 +1,4 @@
-package parser.json.annotation;
+package entity.annotations;
 
 public class Annotation {
 	

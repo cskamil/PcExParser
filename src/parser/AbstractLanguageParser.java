@@ -1,12 +1,12 @@
 package parser;
 
-import parser.json.annotation.Annotation;
-import parser.json.annotation.AnnotationFactory;
-import parser.json.annotation.AnnotationMissingSymbolException;
-import parser.json.annotation.AnnotationType;
-import parser.json.entity.Line;
-import parser.json.entity.Program;
-import parser.json.entity.Tile;
+import entity.annotations.Annotation;
+import entity.annotations.AnnotationFactory;
+import entity.annotations.AnnotationMissingSymbolException;
+import entity.annotations.AnnotationType;
+import entity.Line;
+import entity.Program;
+import entity.Tile;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -7,8 +7,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.HttpClients;
-import parser.json.JSONUtils;
-import parser.json.entity.Program;
+import json.JSONUtils;
+import entity.Program;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

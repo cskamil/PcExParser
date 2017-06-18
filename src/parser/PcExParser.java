@@ -2,9 +2,9 @@ package parser;
 
 import compiler.PcExCompiler;
 import compiler.hackerearth.response.HackerEarthResponse;
-import parser.json.JSONUtils;
-import parser.json.entity.Activity;
-import parser.json.entity.Program;
+import json.JSONUtils;
+import entity.Activity;
+import entity.Program;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -42,6 +42,7 @@ public class PcExParser {
 						Program program = ParserFactory.create(path).parse();
 						HackerEarthResponse executeResponse = PcExCompiler.execute(program);
 						program.setCorrectOutput(executeResponse.runStatus.output);
+
 						return program;
 					})
 					.collect(Collectors.groupingBy(Program::getLanguage, Collectors.groupingBy(Program::getActivityName)));

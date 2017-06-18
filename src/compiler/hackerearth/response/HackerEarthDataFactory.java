@@ -1,7 +1,7 @@
 package compiler.hackerearth.response;
 
 import compiler.hackerearth.HackerEarthData;
-import parser.json.entity.Program;
+import entity.Program;
 
 /**
  * Created by cskamil on 18-Jun-17.

@@ -1,4 +1,4 @@
-package parser.json.entity;
+package entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import parser.Language;

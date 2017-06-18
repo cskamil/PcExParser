@@ -1,4 +1,4 @@
-package parser.json.entity;
+package entity;
 
 /**
  * The {@code Line} class represents the lines in a programs.
