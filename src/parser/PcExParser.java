@@ -26,27 +26,14 @@ import java.util.stream.Stream;
  * @author cskamil
  */
 public class PcExParser {
-	
-	public static void main(String[] args) {
-		//TODO: Take path parameters from configuration file
-		parseDirectory(args[0]).forEach((language, activities) -> {
-			JSONUtils.writeObjectToFile(args[1] + "/" + language.name() + ".json", activities);
-		});
-	}
 
+	//TODO: Return different type to enclose map
 	public static Map<Language,List<Activity>> parseDirectory(String pathString) {
 		try (Stream<Path> pathStream = Files.walk(Paths.get(pathString))) {
 			Map<Language, Map<String, List<Program>>> languageProgramMap = pathStream
 					.filter(path -> Files.isRegularFile(path))
-					.map(path -> {
-						Program program = ParserFactory.create(path).parse();
-						HackerEarthResponse executeResponse = PcExCompiler.execute(program);
-						program.setCorrectOutput(executeResponse.runStatus.output);
-
-						return program;
-					})
+					.map(path -> ParserFactory.create(path).parse())
 					.collect(Collectors.groupingBy(Program::getLanguage, Collectors.groupingBy(Program::getActivityName)));
-
 
 			return languageProgramMap.entrySet().stream()
 					.collect(Collectors.toMap(Map.Entry::getKey,

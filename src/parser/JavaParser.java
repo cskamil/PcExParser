@@ -1,8 +1,10 @@
 package parser;
 
+import entity.Line;
 import entity.Program;
 
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JavaParser extends AbstractLanguageParser {
 
@@ -29,5 +31,17 @@ public class JavaParser extends AbstractLanguageParser {
     @Override
     protected void postParse(Program program) {
         program.setLanguage(Language.JAVA);
+
+        AtomicInteger counter = new AtomicInteger();
+
+        program.getLineList().forEach(line -> {
+            if(line.getContent().trim().endsWith("{")) {
+                line.setIndentLevel(counter.getAndIncrement());
+            } else if(line.getContent().trim().startsWith("}")) {
+                line.setIndentLevel(counter.decrementAndGet());
+            } else {
+                line.setIndentLevel(counter.get());
+            }
+        });
     }
 }

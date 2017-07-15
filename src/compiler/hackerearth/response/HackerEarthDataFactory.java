@@ -1,6 +1,7 @@
 package compiler.hackerearth.response;
 
 import compiler.hackerearth.HackerEarthData;
+import entity.Compilable;
 import entity.Program;
 
 /**
@@ -8,7 +9,7 @@ import entity.Program;
  */
 public class HackerEarthDataFactory {
 
-    public static HackerEarthData create(String clientSecret, Program program) {
+    public static HackerEarthData create(String clientSecret, Compilable program) {
         HackerEarthData data = new HackerEarthData();
         data.setClientSecret(clientSecret);
         data.setLanguage(program.getLanguage().name());

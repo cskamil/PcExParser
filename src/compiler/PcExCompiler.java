@@ -1,29 +1,42 @@
 package compiler;
 
-import compiler.hackerearth.HackerEarthCaller;
-import compiler.hackerearth.response.HackerEarthResponse;
+import entity.Activity;
+import entity.AlternativeProgram;
+import entity.Compilable;
 import entity.Program;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
+import java.util.function.BiConsumer;
 
 public class PcExCompiler {
 
-	public static HackerEarthResponse execute(Program program) {
-		Path path = Paths.get("output/executions/" + program.getLanguage().name() + "_" + program.getActivityName() + "_" + program.getFileName() + "_output.txt");
-		HackerEarthCaller caller = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783");
-		HackerEarthResponse response = caller.run(program);
-		System.out.println(response.responseContent);
+	public static void execute(Compiler compiler, Activity activity, BiConsumer<Program, Response> postExecuteConsumer) {
+		activity.getActivityGoals().stream().forEach(program -> {
+			Response response = execute(compiler, program);
+			postExecuteConsumer.accept(program, response);
+		});
+	}
 
+
+	public static void execute(Compiler compiler, AlternativeProgram alternativeProgram, BiConsumer<AlternativeProgram, Response> postExecuteConsumer) {
+		Response response = execute(compiler, alternativeProgram);
+		postExecuteConsumer.accept(alternativeProgram, response);
+	}
+
+	private static Response execute(Compiler compiler, Compilable program) {
+		Response response = null;
 		try {
-			Files.createDirectories(path.getParent());
-			Files.write(path, response.responseContent.getBytes(), StandardOpenOption.CREATE);
-		} catch (IOException e) {
+			response = compiler.run(program);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+//		try {
+//			Path path = Paths.get("output/executions/" + program.getLanguage().name() + "/" + program.getActivityName() + "/" + program.getFileName() + "_output.txt");
+//			Files.createDirectories(path.getParent());
+//			Files.write(path, response.getRunOutput().getBytes(), StandardOpenOption.CREATE);
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 		return response;
 	}

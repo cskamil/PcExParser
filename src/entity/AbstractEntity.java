@@ -13,4 +13,10 @@ public class AbstractEntity {
 	public String getId() {
 		return id;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		AbstractEntity entity = (AbstractEntity)obj;
+		return entity.getId().equals(getId());
+	}
 }

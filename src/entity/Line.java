@@ -11,9 +11,11 @@ public class Line extends AbstractEntity {
 	private int number;
 	private String content;
 	private String comment;
+	private int indentLevel;
 	
 	public Line() {
 		this.comment = "";
+		this.indentLevel = 0;
 	}
 	
 	public Line(int number, String content) {
@@ -21,7 +23,7 @@ public class Line extends AbstractEntity {
 		this.number = number;
 		this.content = content;
 	}
-	
+
 	public int getNumber() {
 		return number;
 	}
@@ -49,5 +51,13 @@ public class Line extends AbstractEntity {
 
 	public void setComment(String comment) {
 		this.comment = comment;
+	}
+
+	public int getIndentLevel() {
+		return indentLevel;
+	}
+
+	public void setIndentLevel(int indentLevel) {
+		this.indentLevel = indentLevel;
 	}
 }

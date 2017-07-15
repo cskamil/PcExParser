@@ -70,7 +70,9 @@ public abstract class AbstractLanguageParser implements LanguageParser {
                             counter.incrementAndGet();
                         }
 
-                        return new Line(counter.intValue(), line);
+                        Line newLine = new Line(counter.intValue(), line);
+                        postLineCreation(newLine);
+                        return newLine;
                     }). collect(Collectors.toList());
 
         } catch (IOException e) {
@@ -78,6 +80,14 @@ public abstract class AbstractLanguageParser implements LanguageParser {
         }
 
         return lineList;
+    }
+
+    /**
+     * Template method for subclasses to perform operations on parsed line object.
+     * @param line
+     */
+    protected void postLineCreation(Line line) {
+        //Intentionally left blank
     }
 
     /**

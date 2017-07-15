@@ -1,7 +1,10 @@
 package compiler.hackerearth;
 
+import compiler.Compiler;
+import compiler.Response;
 import compiler.hackerearth.response.HackerEarthDataFactory;
 import compiler.hackerearth.response.HackerEarthResponse;
+import entity.Compilable;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -17,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Created by cskamil on 18-Jun-17.
  */
-public class HackerEarthCaller {
+public class HackerEarthCaller implements Compiler {
 
     public static final String RUN_URI = "https://api.hackerearth.com/v3/code/run/";
 
@@ -27,13 +30,13 @@ public class HackerEarthCaller {
         this.clientSecret = clientSecret;
     }
 
-    public HackerEarthResponse run(Program program) {
+    @Override
+    public Response run(Compilable program) {
         HackerEarthData hackerEarthData = HackerEarthDataFactory.create(clientSecret, program);
-
         return run(hackerEarthData);
     }
 
-    public HackerEarthResponse run(HackerEarthData hackerearthData) {
+    private HackerEarthResponse run(HackerEarthData hackerearthData) {
         hackerearthData.setClientSecret(this.clientSecret);
 
         HttpClient httpClient = HttpClients.createDefault();

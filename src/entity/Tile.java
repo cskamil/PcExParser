@@ -20,7 +20,19 @@ public class Tile extends AbstractEntity {
 		this.line = line;
 		this.help = help;
 	}
-	
+
+	@Override
+	public boolean equals(Object obj) {
+		Tile other = (Tile)obj;
+
+		return other.getLine().getContent().equals(getLine().getContent());
+	}
+
+	@Override
+	public int hashCode() {
+		return getLine().getContent().hashCode();
+	}
+
 	public Line getLine() {
 		return line;
 	}
