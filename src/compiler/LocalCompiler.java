@@ -158,7 +158,7 @@ public class LocalCompiler implements Compiler {
             submit.cancel(true);
             return true;
         } catch(Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
         } finally {
             executor.shutdownNow();
             submit.cancel(true);
