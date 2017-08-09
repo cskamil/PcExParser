@@ -1,6 +1,5 @@
 package compiler;
 
-import compiler.hackerearth.response.HackerEarthResponse;
 import entity.Compilable;
 import parser.Language;
 
@@ -9,28 +8,86 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by cskamil on 19-Jun-17.
  */
 public class LocalCompiler implements Compiler {
 
+    private static String INFINITE_LOOP_ERROR = "Your program has an infinite loop";
+
     public static void main(String args[]) throws Exception {
-        new LocalCompiler().run(null);
+        new LocalCompiler().runPython(null);
     }
 
     @Override
     public Response run(Compilable program) throws Exception {
-        if(program.getLanguage() == Language.PYTHON) {
-            return new HackerEarthResponse();
+        if(program.getLanguage() == Language.JAVA) {
+            return runJava(program);
+        } else {
+            return runPython(program);
+        }
+    }
+
+    private Response runPython(Compilable program) throws Exception {
+        LocalRunResponse response = new LocalRunResponse();
+        ProcessBuilder builder = new ProcessBuilder("python", "-c", program.getSourceCode().replaceAll("\"", "'"));
+
+        String[] inputs = program.getUserInput().split(" ");
+        String input = Arrays.stream(inputs).collect(Collectors.joining("\n", "", "\n"));
+
+        Process process = builder.start();
+
+        try (OutputStream outputStream = process.getOutputStream()) {
+            outputStream.write (input.getBytes());
+            outputStream.flush();
+        } catch(IOException e) { //If the process completes its execution, outputStream.write throws IOException.
         }
 
-        LocalResponse compileResponse = new LocalResponse();
+        boolean finished = process.waitFor(2L, TimeUnit.SECONDS);
+
+        if(finished) {
+            BufferedReader errReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            BufferedReader inReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            String errorOutput = errReader.lines().collect(Collectors.joining("\n"));
+            if(errorOutput.equals("")) {
+                String output = inReader.lines().collect(Collectors.joining("\n"));
+                response.setRunOutput(output);
+            } else {
+                response.setRunOutput(errorOutput);
+            }
+
+            errReader.close();
+            inReader.close();
+        } else {
+            response.setRunOutput(INFINITE_LOOP_ERROR);
+        }
+
+        return response;
+    }
+
+    private Response runJava(Compilable program) throws Exception {
+        LocalJavaCompileResponse compileResponse = compileJava(program);
+
+        if(compileResponse.isCompiled()) {
+            boolean hasInfiniteLoop = checkJavaInfiniteLoop(program);
+
+            if(!hasInfiniteLoop) {
+                return executeJava(compileResponse, program.getUserInput());
+            } else {
+                return new LocalRunResponse(INFINITE_LOOP_ERROR);
+            }
+        } else {
+            return compileResponse;
+        }
+    }
+
+    private LocalJavaCompileResponse compileJava(Compilable program) throws Exception {
+        LocalJavaCompileResponse compileResponse = new LocalJavaCompileResponse();
 
         String sourceCode = program.getSourceCode();
 
@@ -51,62 +108,118 @@ public class LocalCompiler implements Compiler {
                 compilerWriter, fileManager, null, null, null, Arrays.asList(compilationUnit));
 
         Boolean compiled = compilationTask.call();
+
+        compileResponse.setCompiled(compiled);
         if(!compiled) {
-            for (Diagnostic<? extends JavaFileObject> d : diagnostics.getDiagnostics()) {
-                System.out.println(d.getKind() + ": " + d.toString());
-            }
-            compileResponse.setRunOutput(compilerWriter.toString());
-            //System.out.println(compilerWriter);
+            compileResponse.setCompileOutput(compilerWriter.toString());
         } else {
-            CompiledClassLoader classLoader = new CompiledClassLoader(fileManager.getGeneratedOutputFiles());
-
-            Class<?> codeGenTest = classLoader.loadClass(javaProgramName);
-            Method main = codeGenTest.getMethod("main", String[].class);
-
-            //TODO: comment-in after user input included
-            //System.setIn(new ByteArrayInputStream(program.getInput().getBytes()));
-
-            ByteArrayOutputStream executionStream = new ByteArrayOutputStream();
-            PrintStream stream = new PrintStream(executionStream);
-
-            PrintStream originalOut = System.out;
-            System.setOut(stream);
-            try {
-                runWithTimeout(main, 3L, TimeUnit.SECONDS);
-                //System.out.println(executionStream.toString());
-                compileResponse.setRunOutput(executionStream.toString());
-            } catch(InvocationTargetException e) {
-                StringBuilder responseBuilder = new StringBuilder();
-                responseBuilder.append(e.getTargetException().toString()).append("\n");
-                responseBuilder.append(e.getTargetException().getStackTrace()[0].toString()).append("\n");
-
-                //System.out.println(responseBuilder.toString());
-                compileResponse.setRunOutput(responseBuilder.toString());
-            }
-            System.setOut(originalOut);
-            executionStream.close();
+            compileResponse.setFileManager(fileManager);
+            compileResponse.setJavaProgramName(javaProgramName);
         }
 
         return compileResponse;
     }
 
-    public static void runWithTimeout(Method main, long timeout, TimeUnit timeUnit) throws Exception {
+    private boolean checkJavaInfiniteLoop(Compilable program) throws Exception {
+        String sourceCode = program.getSourceCode();
+        sourceCode = sourceCode.replaceAll("System.out.print", "System.out.print(\"\");//");
+
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        String javaProgramName = program.getFileName().substring(0, program.getFileName().indexOf("."));
+        JavaFileObject compilationUnit = new StringJavaFileObject(javaProgramName, sourceCode);
+        DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+        SimpleJavaFileManager fileManager =
+                new SimpleJavaFileManager(compiler.getStandardFileManager(diagnostics, null, null));
+        JavaCompiler.CompilationTask compilationTask = compiler.getTask(
+                null, fileManager, null, null, null, Arrays.asList(compilationUnit));
+
+        compilationTask.call();
+        CompiledClassLoader classLoader = new CompiledClassLoader(fileManager.getGeneratedOutputFiles());
+
+        Class<?> codeGenTest = classLoader.loadClass(javaProgramName);
+        Method main = codeGenTest.getMethod("main", String[].class);
+
         final ExecutorService executor = Executors.newSingleThreadExecutor();
-        final Future<Void> future = executor.submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                main.invoke(null, new Object[]{null});
-                return null;
-            }
-        });
-        executor.shutdown(); // This does not cancel the already-scheduled task.
+        Callable<Void> mainCallable = () -> {
+            main.invoke(null, new Object[]{null});
+            return null;
+        };
+
+        Future<Void> submit = null;
+
         try {
-            future.get(timeout, timeUnit);
+            System.setIn(new ByteArrayInputStream((program.getUserInput()).getBytes()));
+            submit = executor.submit(mainCallable);
+            submit.get(2L, TimeUnit.SECONDS);
+            executor.shutdownNow(); // This does not cancel the already-scheduled task.
+            submit.cancel(true);
         }
         catch (TimeoutException e) {
-            System.out.println("Infinite Loop, please check your answer.");
+            submit.cancel(true);
+            return true;
+        } catch(Exception e) {
+            e.printStackTrace();
+        } finally {
+            executor.shutdownNow();
+            submit.cancel(true);
+        }
+
+        return false;
+    }
+
+    private LocalRunResponse executeJava(LocalJavaCompileResponse compileResponse, String userInput) throws Exception {
+        LocalRunResponse runResponse = new LocalRunResponse();
+        CompiledClassLoader classLoader = new CompiledClassLoader(compileResponse.getFileManager().getGeneratedOutputFiles());
+
+        Class<?> codeGenTest = classLoader.loadClass(compileResponse.getJavaProgramName());
+        Method main = codeGenTest.getMethod("main", String[].class);
+
+        try {
+            runJavaMethodWithTimeout(main, runResponse, userInput, 2L, TimeUnit.SECONDS);
+        } catch(InvocationTargetException e) {
+            StringBuilder responseBuilder = new StringBuilder();
+            responseBuilder.append(e.getTargetException().toString()).append("\n");
+            responseBuilder.append(e.getTargetException().getStackTrace()[0].toString()).append("\n");
+
+            runResponse.setRunOutput(responseBuilder.toString());
+        }
+
+        return runResponse;
+    }
+
+    private static void runJavaMethodWithTimeout(Method main, LocalRunResponse response, String userInput, long timeout, TimeUnit timeUnit) throws Exception {
+        InputStream originalIn = System.in;
+        PrintStream originalOut = System.out;
+
+        ByteArrayOutputStream executionStream = new ByteArrayOutputStream();
+        PrintStream stream = new PrintStream(executionStream);
+
+        final ExecutorService executor = Executors.newSingleThreadExecutor();
+        Callable<Void> mainCallable = () -> {
+            main.invoke(null, new Object[]{null});
+            return null;
+        };
+
+        Future<Void> submit = null;
+
+        try {
+            System.setOut(stream);
+            System.setIn(new ByteArrayInputStream(userInput.getBytes()));
+
+            submit = executor.submit(mainCallable);
+            submit.get(timeout, timeUnit);
+            executor.awaitTermination(timeout, timeUnit);
+            executor.shutdownNow(); // This does not cancel the already-scheduled task.
+            executor.shutdown();
+            submit.cancel(true);
+            response.setRunOutput(executionStream.toString());
+        }
+        catch (TimeoutException e) {
+            submit.cancel(true);
+            response.setRunOutput("Infinite Loop, please check your answer.");
         }
         catch (ExecutionException e) {
+            submit.cancel(true);
             //unwrap the root cause
             Throwable t = e.getCause();
             if (t instanceof Error) {
@@ -117,7 +230,11 @@ public class LocalCompiler implements Compiler {
                 throw new IllegalStateException(t);
             }
         } finally {
-            future.cancel(true);
+            executor.shutdownNow();
+            executionStream.close();
+            submit.cancel(true);
+            System.setOut(originalOut);
+            System.setIn(originalIn);
         }
     }
 
@@ -161,7 +278,7 @@ public class LocalCompiler implements Compiler {
         }
     }
 
-    private static class SimpleJavaFileManager extends ForwardingJavaFileManager {
+    public static class SimpleJavaFileManager extends ForwardingJavaFileManager {
         private final List<ClassJavaFileObject> outputFiles;
 
         protected SimpleJavaFileManager(JavaFileManager fileManager) {

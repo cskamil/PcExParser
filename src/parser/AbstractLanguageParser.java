@@ -47,9 +47,20 @@ public abstract class AbstractLanguageParser implements LanguageParser {
         List<Line> annotatedLines = codeTypeMap.get(true);
 
         Program program = new Program();
-        program.setActivityName(path.getName(path.getNameCount()-2).toString());
-        program.setFileName(path.getName(path.getNameCount()-1).toString());
         program.setLineList(programLines);
+        program.setFileName(path.getName(path.getNameCount()-1).toString());
+
+        String grandParentDirectoryName = path.getName(path.getNameCount()-3).toString();
+        String parentDirectoryName = path.getName(path.getNameCount()-2).toString();
+
+        if(grandParentDirectoryName.equals("challenge")) {
+            program.setOrder(Integer.parseInt(parentDirectoryName.replace("_", "")));
+            program.setActivityName(path.getName(path.getNameCount()-4).toString());
+            program.setFullyWorkedOut(false);
+        } else {
+            program.setActivityName(parentDirectoryName);
+            program.setFullyWorkedOut(true);
+        }
 
         parseAnnotatedLines(annotatedLines, program);
 
@@ -124,22 +135,29 @@ public abstract class AbstractLanguageParser implements LanguageParser {
             try {
                 Annotation annotation = AnnotationFactory.createAnnotation(annotatedLine.getContent());
 
-                if(annotatedLine.getNumber() == 0) { //Class Level Comments
-                    if(annotation.getType() == AnnotationType.GOAL_DESCRIPTION) {
-                        program.setGoalDescription(annotation.getText());
-                    } else if(annotation.getType() == AnnotationType.CORRECT_OUTPUT) {
-                        //program.setCorrectOutput(annotation.getText());
-                    } else if(annotation.getType() == AnnotationType.DISTRACTOR) {
-                        Tile distractorTile = parseDistractorTile(annotation);
-                        program.addDistractor(distractorTile);
-                    }
-                } else { //Comments inside class definition
+                if(annotation.getType() == AnnotationType.NAME) {
+                    program.setName(annotation.getText());
+                } else if(annotation.getType() == AnnotationType.GOAL_DESCRIPTION) {
+                    program.setGoalDescription(annotation.getText());
+                } else if(annotation.getType() == AnnotationType.DISTRACTOR) {
+                    Tile distractorTile = parseDistractorTile(annotation);
+                    program.addDistractor(distractorTile);
+                } else if(annotation.getType() == AnnotationType.INPUT) {
+                    program.setUserInput(annotation.getText().replace(",", " "));
+                } else {
                     Line commentedLine = program.findLineByNumber(annotatedLine.getNumber() + 1);
 
                     if(annotation.getType() == AnnotationType.HELP_DESCRIPTION) {
-                        commentedLine.setComment(annotation.getText());
+                        commentedLine.addComment(annotation.getText());
                     } else if (annotation.getType() == AnnotationType.BLANK) {
-                        program.addBlankLine(new Tile(commentedLine, annotation.getText()));
+                        Tile blankLine = program.getBlankLineByLine(commentedLine);
+                        if(blankLine == null) {
+                            Tile tile = new Tile(commentedLine, annotation.getText());
+                            program.addBlankLine(tile);
+                        } else {
+                            blankLine.addHelp(annotation.getText());
+                        }
+
                     }
                 }
             } catch (AnnotationMissingSymbolException e) {

@@ -17,6 +17,7 @@ public class HackerEarthData {
     private String language;
     private String timeLimit;
     private String memoryLimit;
+    private String userInput;
 
     public HackerEarthData() {
         this.setAsync("0");
@@ -72,6 +73,14 @@ public class HackerEarthData {
         this.memoryLimit = memoryLimit;
     }
 
+    public String getUserInput() {
+        return userInput;
+    }
+
+    public void setUserInput(String userInput) {
+        this.userInput = userInput;
+    }
+
     public List<NameValuePair> getURLParameters() {
         List<NameValuePair> parameters = new ArrayList<NameValuePair>();
         parameters.add(new BasicNameValuePair("source", getSource()));
@@ -80,7 +89,10 @@ public class HackerEarthData {
         parameters.add(new BasicNameValuePair("async", getAsync()));
         parameters.add(new BasicNameValuePair("memory_limit", getMemoryLimit()));
         parameters.add(new BasicNameValuePair("time_limit", getTimeLimit()));
+        parameters.add(new BasicNameValuePair("input", getUserInput()));
 
         return parameters;
     }
+
+
 }

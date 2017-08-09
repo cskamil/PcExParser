@@ -20,7 +20,7 @@ import java.util.*;
 public class TileCombinationGenerator {
 
     public static void createAlternatives(Program program) {
-        if(program.getBlankLineList().isEmpty() == false) {
+        if(program.isFullyWorkedOut() == false && program.getBlankLineList().isEmpty() == false) {
             Set<Tile> blankLinesWithDistractors = new HashSet<>();
             blankLinesWithDistractors.addAll(program.getBlankLineList());
             blankLinesWithDistractors.addAll(program.getDistractorList());
@@ -37,8 +37,11 @@ public class TileCombinationGenerator {
                 PermutationIterator<Tile> integerPermutationIterator = new PermutationIterator<>(tileListFromCombination);
                 while(integerPermutationIterator.hasNext()) {
                     List<Tile> permutatedTileList = integerPermutationIterator.next();
-                    AlternativeProgram alternativeProgram = program.addAlternative(permutatedTileList);
-                    printAlternativeToFile(nextCombination, alternativeProgram);
+
+                    if(permutatedTileList.equals(program.getBlankLineList()) == false) {
+                        AlternativeProgram alternativeProgram = program.addAlternative(permutatedTileList);
+                        printAlternativeToFile(nextCombination, alternativeProgram);
+                    }
                 }
             }
         }
@@ -57,7 +60,7 @@ public class TileCombinationGenerator {
     private static Path getAlternativeFilePath(int[] nextCombination, Compilable program) {
        return Paths.get("output/alternatives/" + program.getLanguage().name() + "/"
                                 + program.getActivityName() + "/" + program.getFileName() + "/"
-                                + program.getFileName() + "_" + Arrays.toString(nextCombination) + "." + program.getLanguage().getExtension());
+                                + program.getFileName() + "_" + Arrays.toString(nextCombination) + program.getId() + "." + program.getLanguage().getExtension());
     }
 
 

@@ -43,7 +43,17 @@ public class Activity extends AbstractEntity {
 		this.activityName = activityName;
 	}
 	public List<Program> getActivityGoals() {
-		return activityGoals;
+		List<Program> sortedList = new ArrayList<>();
+
+		activityGoals.forEach(goal -> {
+			if(goal.isFullyWorkedOut()) {
+				sortedList.add(0, goal);
+			} else {
+				sortedList.add(goal);
+			}
+		});
+
+		return sortedList;
 	}
 	public void setActivityGoals(List<Program> activityGoals) {
 		this.activityGoals = activityGoals;

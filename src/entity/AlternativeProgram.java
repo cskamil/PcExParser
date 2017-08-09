@@ -19,6 +19,7 @@ public class AlternativeProgram extends AbstractEntity implements Compilable{
     private List<Line> lineList;
     private List<Tile> alternativeTiles;
     private String output;
+    private String userInput;
 
     public AlternativeProgram() {
         this.lineList = new ArrayList<>();
@@ -66,6 +67,11 @@ public class AlternativeProgram extends AbstractEntity implements Compilable{
         return activityName;
     }
 
+    @Override
+    public String getUserInput() {
+        return userInput;
+    }
+
     public void setActivityName(String activityName) {
         this.activityName = activityName;
     }
@@ -95,5 +101,9 @@ public class AlternativeProgram extends AbstractEntity implements Compilable{
 
     public void setAlternativeTiles(List<Tile> alternativeTiles) {
         this.alternativeTiles = alternativeTiles;
+    }
+
+    public void setUserInput(String userInput) {
+        this.userInput = userInput;
     }
 }

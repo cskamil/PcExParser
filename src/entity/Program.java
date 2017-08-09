@@ -17,13 +17,16 @@ import java.util.stream.Collectors;
  *
  */
 public class Program extends AbstractEntity implements Compilable {
-	
+
+	private String name;
+	private int order;
+	private boolean isFullyWorkedOut;
 	private Language language;
 	private String activityName;
 	private String fileName;
 	private String goalDescription;
 	private String correctOutput;
-	//TODO: include user input
+	private String userInput;
 	private List<Line> lineList;
 	
 	private List<Tile> distractorList;
@@ -32,6 +35,7 @@ public class Program extends AbstractEntity implements Compilable {
 	private List<AlternativeProgram> alternatives;
 	
 	public Program() {
+		this.userInput = "";
 		this.distractorList = new ArrayList<>();
 		this.lineList = new ArrayList<>();
 		this.blankLineList = new ArrayList<>();
@@ -51,6 +55,7 @@ public class Program extends AbstractEntity implements Compilable {
 		alternative.setActivityName(getActivityName());
 		alternative.setAlternativeTiles(alternativeTileLines);
 		alternative.setLineList(replaceBlankLines(alternativeTileLines));
+		alternative.setUserInput(getUserInput());
 
 		this.alternatives.add(alternative);
 
@@ -88,9 +93,21 @@ public class Program extends AbstractEntity implements Compilable {
 							.findFirst().get();
 	}
 
+	public Tile getBlankLineByLine(Line line) {
+		return getBlankLineList().stream().filter(blankLine -> blankLine.getLine().getId().equals(line.getId())).findFirst().orElse(null);
+	}
+
 	@JsonIgnore
 	public String getSourceCode() {
 		return getLineList().stream().map(line -> line.getContent()).collect(Collectors.joining("\n"));
+	}
+
+	public boolean isFullyWorkedOut() {
+		return isFullyWorkedOut;
+	}
+
+	public void setFullyWorkedOut(boolean fullyWorkedOut) {
+		isFullyWorkedOut = fullyWorkedOut;
 	}
 
 	public String getGoalDescription() {
@@ -145,5 +162,30 @@ public class Program extends AbstractEntity implements Compilable {
 
 	public List<AlternativeProgram> getAlternatives() {
 		return alternatives;
+	}
+
+	@Override
+	public String getUserInput() {
+		return userInput;
+	}
+
+	public void setUserInput(String userInput) {
+		this.userInput = userInput;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
 	}
 }

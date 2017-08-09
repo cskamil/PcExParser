@@ -22,17 +22,11 @@ public class HackerEarthResponse implements Response{
 
     @Override
     @JsonIgnore
-    public String getRunOutput() {
-        if(runStatus == null) {
-            return "";
+    public String getOutput() {
+        if(compileStatus.equals("OK")) {
+            return runStatus.output;
+        } else {
+            return compileStatus;
         }
-
-        return runStatus.output;
-    }
-
-    @Override
-    @JsonIgnore
-    public String getDetailedOutput() {
-        return responseContent;
     }
 }

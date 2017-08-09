@@ -1,5 +1,8 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 
  * The {@code Tile} class represents tiles in programs. 
@@ -11,14 +14,16 @@ package entity;
 public class Tile extends AbstractEntity {
 	
 	private Line line;
-	private String help;
+	private List<String> helpList;
 	
 	public Tile() {
+		this.helpList = new ArrayList<>();
 	}
 	
 	public Tile(Line line, String help) {
+		this();
 		this.line = line;
-		this.help = help;
+		addHelp(help);
 	}
 
 	@Override
@@ -39,11 +44,13 @@ public class Tile extends AbstractEntity {
 	public void setLine(Line line) {
 		this.line = line;
 	}
-	
-	public String getHelp() {
-		return help;
+
+	public List<String> getHelpList() {
+		return helpList;
 	}
-	public void setHelp(String help) {
-		this.help = help;
+
+	public void addHelp(String help) {
+		helpList.add(help);
+		line.addComment(help);
 	}
 }

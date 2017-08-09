@@ -1,5 +1,8 @@
 package entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * The {@code Line} class represents the lines in a programs.
  * 
@@ -10,11 +13,11 @@ public class Line extends AbstractEntity {
 
 	private int number;
 	private String content;
-	private String comment;
+	private List<String> commentList;
 	private int indentLevel;
 	
 	public Line() {
-		this.comment = "";
+		this.commentList = new ArrayList<>();
 		this.indentLevel = 0;
 	}
 	
@@ -40,24 +43,19 @@ public class Line extends AbstractEntity {
 		this.content = content;
 	}
 	
-	@Override
-	public String toString() {
-		return "Line " + number + "," + content + "," + comment;
-	}
-
-	public String getComment() {
-		return comment;
-	}
-
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
-
 	public int getIndentLevel() {
 		return indentLevel;
 	}
 
 	public void setIndentLevel(int indentLevel) {
 		this.indentLevel = indentLevel;
+	}
+
+	public List<String> getCommentList() {
+		return commentList;
+	}
+
+	public void addComment(String comment) {
+		this.commentList.add(comment);
 	}
 }

@@ -1,15 +1,20 @@
 package application;
 
-import compiler.Compiler;
 import compiler.LocalCompiler;
 import compiler.PcExCompiler;
 import compiler.TileCombinationGenerator;
 import compiler.hackerearth.HackerEarthCaller;
 import entity.Activity;
+import entity.Program;
 import json.JSONUtils;
 import parser.Language;
 import parser.PcExParser;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Map;
 
@@ -23,18 +28,26 @@ public class PcExParserRunner {
         Map<Language, List<Activity>> languageActivityListMap = PcExParser.parseDirectory(args[0]);
 
         //TODO: Create compiler based on configuration
-        //Compiler compiler = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783");
-        Compiler compiler = new LocalCompiler();
+        HackerEarthCaller hackerEarthCaller = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783");
+        LocalCompiler compiler = new LocalCompiler();
 
         languageActivityListMap.forEach((language, activities) -> {
-            //TODO: Check if there is a compilation or runtime error, then set output
-            activities.forEach(activity -> PcExCompiler.execute(compiler, activity, (program, response) -> {
-                program.setCorrectOutput(response.getRunOutput());
-//                TileCombinationGenerator.createAlternatives(program);
-//
-//                program.getAlternatives().forEach(alternative -> {
-//                    PcExCompiler.execute(compiler, alternative, (altProgram, altResponse) -> altProgram.setOutput(altResponse.getRunOutput()));
-//                });
+            activities.forEach(activity -> PcExCompiler.execute(compiler, hackerEarthCaller, activity, (program, response) -> {
+                System.out.println(program.getFileName());
+                program.setCorrectOutput(response.getOutput());
+                //printCleanedSourceCode(program);
+                TileCombinationGenerator.createAlternatives(program);
+
+                if(program.getLanguage().equals(Language.JAVA)) {
+                    program.getAlternatives().forEach(alternative -> {
+                        PcExCompiler.execute(compiler, hackerEarthCaller, alternative, (altProgram, altResponse) -> {
+                            altProgram.setOutput(altResponse.getOutput());
+                            if(program.getCorrectOutput().equals(altResponse.getOutput())) {
+                                System.err.println("ALTERNATIVE OUTPUT SAME AS EXPECTED " + program.getFileName() +  " " + altProgram.getId());
+                            }
+                        });
+                    });
+                }
             }));
 
             JSONUtils.writeObjectToFile(args[1] + "/" + language.name() + ".json", activities);
@@ -45,5 +58,15 @@ public class PcExParserRunner {
         //TODO: Write program sourceCode to file to a folder called cleanedSourceCode
 
         System.exit(0);
+    }
+
+    private static void printCleanedSourceCode(Program program) {
+        Path path = Paths.get("output/cleanedSourceCode/" + program.getLanguage().name() + "/" + program.getActivityName() + "/" + program.getFileName());
+        try {
+            Files.createDirectories(path.getParent());
+            Files.write(path, program.getSourceCode().getBytes(), StandardOpenOption.CREATE);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

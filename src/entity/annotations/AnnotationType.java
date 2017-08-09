@@ -7,7 +7,8 @@ public enum AnnotationType {
 	DISTRACTOR("@distractor", "{", "}"),
 	GOAL_DESCRIPTION("@goalDescription", "(", ")"),
 	HELP_DESCRIPTION("@helpDescription", "(", ")"),
-	INPUT("@input", "(", ")");
+	INPUT("@input", "(", ")"),
+	NAME("@name", "(", ")");
 	
 	private String annotationStyle;
 	private String startSymbol;
