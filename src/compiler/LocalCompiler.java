@@ -149,7 +149,7 @@ public class LocalCompiler implements Compiler {
 
         try {
             System.setIn(new ByteArrayInputStream((program.getUserInput()).getBytes()));
-            submit = executor.submit(mainCallable);
+             submit = executor.submit(mainCallable);
             submit.get(2L, TimeUnit.SECONDS);
             executor.shutdownNow(); // This does not cancel the already-scheduled task.
             submit.cancel(true);

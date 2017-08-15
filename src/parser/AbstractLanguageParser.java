@@ -143,7 +143,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
                     Tile distractorTile = parseDistractorTile(annotation);
                     program.addDistractor(distractorTile);
                 } else if(annotation.getType() == AnnotationType.INPUT) {
-                    program.setUserInput(annotation.getText().replace(",", " "));
+                    program.addUserInput(annotation.getText());
                 } else {
                     Line commentedLine = program.findLineByNumber(annotatedLine.getNumber() + 1);
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import parser.Language;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,7 +27,7 @@ public class Program extends AbstractEntity implements Compilable {
 	private String fileName;
 	private String goalDescription;
 	private String correctOutput;
-	private String userInput;
+	private List<String> userInputList;
 	private List<Line> lineList;
 	
 	private List<Tile> distractorList;
@@ -35,7 +36,7 @@ public class Program extends AbstractEntity implements Compilable {
 	private List<AlternativeProgram> alternatives;
 	
 	public Program() {
-		this.userInput = "";
+		this.userInputList = new ArrayList<>();
 		this.distractorList = new ArrayList<>();
 		this.lineList = new ArrayList<>();
 		this.blankLineList = new ArrayList<>();
@@ -164,15 +165,6 @@ public class Program extends AbstractEntity implements Compilable {
 		return alternatives;
 	}
 
-	@Override
-	public String getUserInput() {
-		return userInput;
-	}
-
-	public void setUserInput(String userInput) {
-		this.userInput = userInput;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -187,5 +179,24 @@ public class Program extends AbstractEntity implements Compilable {
 
 	public void setOrder(int order) {
 		this.order = order;
+	}
+
+	public List<String> getUserInputList() {
+		return userInputList;
+	}
+
+	public void setUserInputList(List<String> userInputList) {
+		this.userInputList = userInputList;
+	}
+
+	public void addUserInput(String userInput) {
+		getUserInputList().add(userInput);
+	}
+
+	@Override
+	public String getUserInput() {
+		String input = userInputList.stream().collect(Collectors.joining(",")).replace(",", " ");
+
+		return input;
 	}
 }
