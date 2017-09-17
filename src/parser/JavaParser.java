@@ -35,7 +35,10 @@ public class JavaParser extends AbstractLanguageParser {
         AtomicInteger counter = new AtomicInteger();
 
         program.getLineList().forEach(line -> {
-            if(line.getContent().trim().endsWith("{")) {
+            if(line.getContent().trim().startsWith("}") && line.getContent().trim().endsWith("{")) {
+                line.setIndentLevel(counter.decrementAndGet());
+                counter.incrementAndGet();
+            } else if(line.getContent().trim().endsWith("{")) {
                 line.setIndentLevel(counter.getAndIncrement());
             } else if(line.getContent().trim().startsWith("}")) {
                 line.setIndentLevel(counter.decrementAndGet());
