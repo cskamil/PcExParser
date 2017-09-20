@@ -15,6 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -38,16 +40,25 @@ public class PcExParserRunner {
                 //printCleanedSourceCode(program);
                 TileCombinationGenerator.createAlternatives(program);
 
-                if(program.getLanguage().equals(Language.JAVA)) {
-                    program.getAlternatives().forEach(alternative -> {
+
+                program.getAlternatives().forEach(alternative -> {
+                    boolean runAlternative = program.getLanguage().equals(Language.JAVA) ||
+                                             program.getLanguage().equals(Language.PYTHON) &&
+                                                     new HashSet(alternative.getAlternativeTiles())
+                                                             .equals( new HashSet(program.getBlankLineList()));
+
+
+                    if(runAlternative) {
                         PcExCompiler.execute(compiler, hackerEarthCaller, alternative, (altProgram, altResponse) -> {
                             altProgram.setOutput(altResponse.getOutput());
                             if(program.getCorrectOutput().equals(altResponse.getOutput())) {
                                 System.err.println("ALTERNATIVE OUTPUT SAME AS EXPECTED " + program.getFileName() +  " " + altProgram.getId());
                             }
                         });
-                    });
-                }
+                    }
+
+                });
+
             }));
 
             JSONUtils.writeObjectToFile(args[1] + "/" + language.name() + ".json", activities);

@@ -10,6 +10,8 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -33,8 +35,18 @@ public class LocalCompiler implements Compiler {
     }
 
     private Response runPython(Compilable program) throws Exception {
+
+        String modifiedSourceCode = program.getSourceCode();
+        Pattern p = Pattern.compile("input\\(.+\\)");
+        Matcher m = p.matcher(program.getSourceCode());
+        while(m.find()) {
+            String matchedInputString = m.group();
+            modifiedSourceCode = modifiedSourceCode.replace(matchedInputString, matchedInputString.substring(0, matchedInputString.length()-2) + "\\n" + matchedInputString.substring(matchedInputString.length()-2));
+        }
+
         LocalRunResponse response = new LocalRunResponse();
-        ProcessBuilder builder = new ProcessBuilder("python", "-c", program.getSourceCode().replaceAll("\"", "'"));
+        ProcessBuilder builder = new ProcessBuilder("python", "-c", modifiedSourceCode.replaceAll("\"", "'"));
+
 
         String[] inputs = program.getUserInput().split(" ");
         String input = Arrays.stream(inputs).collect(Collectors.joining("\n", "", "\n"));

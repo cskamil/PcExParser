@@ -64,11 +64,46 @@ public class HackerEarthCaller implements Compiler {
     public static void main(String args[]) {
         HackerEarthData hackerearthData = new HackerEarthData();
         hackerearthData.setAsync("0");
-        hackerearthData.setLanguage("PYTHON");
-        hackerearthData.setTimeLimit("5");
+        hackerearthData.setLanguage("CPP");
+        hackerearthData.setTimeLimit("10");
         hackerearthData.setMemoryLimit("262144");
-        hackerearthData.setSource("print 'Hello World'");
+        hackerearthData.setSource("#include <iostream>\n" +
+                "#include <string>\n" +
+                "using namespace std;\n" +
+                "int tersearch(int arr[], int low, int high, int n){\n" +
+                "\tif(low<high){\n" +
+                "\t\tint mid1=((low+high)/3);\n" +
+                "\t\tint mid2=((2*(low+high))/3);\n" +
+                "\t\tif(arr[mid1]==n){\n" +
+                "\t\t\treturn mid1;\n" +
+                "\t\t}\n" +
+                "\t\telse if(arr[mid2]==n){\n" +
+                "\t\t\treturn mid2;\n" +
+                "\t\t}\n" +
+                "\t\telse if(arr[mid1]>n){\n" +
+                "\t\t\treturn tersearch(arr,low,mid1,n);\n" +
+                "\t\t}\n" +
+                "\t\telse if(arr[mid1]<n&&arr[mid2]>n){\n" +
+                "\t\t\treturn tersearch(arr,mid1,mid2,n);\n" +
+                "\t\t}\n" +
+                "\t\telse if(arr[mid2]<n){\n" +
+                "\t\t\treturn tersearch(arr,mid2,high,n);\n" +
+                "\t\t}\n" +
+                "\t}\n" +
+                "\telse return -1;\n" +
+                "}\n" +
+                "int main(void){\n" +
+                "\tint ip1[9]={4,18,25,55,62,74,83,90,95}; /*84*/\n" +
+                "\tint result1=tersearch (ip1, 0, 8, 84);\n" +
+                "\tif(result1==-1){\n" +
+                "\t\tcout<<\"\\nElement not present in Array\";\n" +
+                "\t}\n" +
+                "\telse{\n" +
+                "\t\tcout<<\"\\nElement present at: \"<<result1;\n" +
+                "\t}\n" +
+                "}");
 
-        System.out.println(new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783").run(hackerearthData));
+        HackerEarthResponse result = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783").run(hackerearthData);
+        System.out.println(result);
     }
 }
