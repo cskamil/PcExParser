@@ -31,7 +31,7 @@ public class PcExParser {
 	public static Map<Language,List<Activity>> parseDirectory(String pathString) {
 		try (Stream<Path> pathStream = Files.walk(Paths.get(pathString))) {
 			Map<Language, Map<String, List<Program>>> languageProgramMap = pathStream
-					.filter(path -> Files.isRegularFile(path) && !path.getFileName().toString().equals(".DS_Store"))
+					.filter(path -> Files.isRegularFile(path) && !path.getFileName().toString().equals(".DS_Store") && !path.getFileName().toString().equals("__init__.py"))
 					.map(path -> ParserFactory.create(path).parse())
 					.collect(Collectors.groupingBy(Program::getLanguage, Collectors.groupingBy(Program::getActivityName)));
 

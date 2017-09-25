@@ -45,7 +45,8 @@ public class LocalCompiler implements Compiler {
         }
 
         LocalRunResponse response = new LocalRunResponse();
-        ProcessBuilder builder = new ProcessBuilder("python", "-c", modifiedSourceCode.replaceAll("\"", "'"));
+        modifiedSourceCode = modifiedSourceCode.replaceAll("'", "\\\\'").replaceAll("\"", "'");
+        ProcessBuilder builder = new ProcessBuilder("python", "-c", modifiedSourceCode);
 
 
         String[] inputs = program.getUserInput().split(" ");
