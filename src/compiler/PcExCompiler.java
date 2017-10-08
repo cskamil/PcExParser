@@ -13,6 +13,7 @@ public class PcExCompiler {
 
 	public static void execute(LocalCompiler compiler, HackerEarthCaller hackerEarthCaller, Activity activity, BiConsumer<Program, Response> postExecuteConsumer) {
 		activity.getActivityGoals().stream().forEach(program -> {
+			program.createUserInputString();
 			Response response = execute(compiler, hackerEarthCaller, program);
 			postExecuteConsumer.accept(program, response);
 		});
@@ -20,6 +21,7 @@ public class PcExCompiler {
 
 
 	public static void execute(LocalCompiler compiler, HackerEarthCaller hackerEarthCaller, AlternativeProgram alternativeProgram, BiConsumer<AlternativeProgram, Response> postExecuteConsumer) {
+		alternativeProgram.generateAlternativeTileIds();
 		Response response = execute(compiler, hackerEarthCaller, alternativeProgram);
 		postExecuteConsumer.accept(alternativeProgram, response);
 	}

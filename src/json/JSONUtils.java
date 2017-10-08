@@ -1,9 +1,12 @@
 package json;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import entity.Activity;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.List;
 
 public class JSONUtils {
 	
@@ -32,6 +35,17 @@ public class JSONUtils {
 	}
 
 	public static <T> T parseStringToObject(String json, Class<T> clazz) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			return objectMapper.readValue(json, clazz);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static <T> T parseStringToListObject(String json, TypeReference<List<Activity>> clazz) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			return objectMapper.readValue(json, clazz);

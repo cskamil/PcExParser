@@ -29,6 +29,7 @@ public class Program extends AbstractEntity implements Compilable {
 	private String correctOutput;
 	private List<String>
 			userInputList;
+	private String userInput;
 	private List<Line> lineList;
 	
 	private List<Tile> distractorList;
@@ -194,10 +195,17 @@ public class Program extends AbstractEntity implements Compilable {
 		getUserInputList().add(userInput);
 	}
 
+	public void createUserInputString() {
+		String input = userInputList.stream().collect(Collectors.joining(",")).replace(",", " ");
+		this.userInput = input;
+	}
+
+	public void setUserInput(String input) {
+		this.userInput = input;
+	}
+
 	@Override
 	public String getUserInput() {
-		String input = userInputList.stream().collect(Collectors.joining(",")).replace(",", " ");
-
-		return input;
+		return userInput;
 	}
 }

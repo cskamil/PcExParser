@@ -18,6 +18,7 @@ public class AlternativeProgram extends AbstractEntity implements Compilable{
     private String fileName;
     private List<Line> lineList;
     private List<Tile> alternativeTiles;
+    private String alternativeTileIds;
     private String output;
     private String userInput;
 
@@ -26,8 +27,16 @@ public class AlternativeProgram extends AbstractEntity implements Compilable{
         this.alternativeTiles =  new ArrayList<>();
     }
 
+    public void setAlternativeTileIds(String alternativeTileIds) {
+        this.alternativeTileIds = alternativeTileIds;
+    }
+
     public String getAlternativeTileIds() {
-       return alternativeTiles.stream().map(tile -> tile.getLine().getId())
+        return alternativeTileIds;
+    }
+
+    public void generateAlternativeTileIds() {
+       this.alternativeTileIds = alternativeTiles.stream().map(tile -> tile.getLine().getId())
                                         .collect(Collectors.joining(","));
     }
 

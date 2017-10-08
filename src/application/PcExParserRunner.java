@@ -61,8 +61,10 @@ public class PcExParserRunner {
 
             }));
 
-            JSONUtils.writeObjectToFile(args[1] + "/" + language.name() + "_" + activities.get(0).getActivityName() +".json", activities);
+            String jsonFileName = args[1] + "/" + language.name() + ".json";
 
+            JSONUtils.writeObjectToFile(jsonFileName, activities);
+            JSONSplit.splitJSONByActivityName(jsonFileName, language.name());
         });
 
 
