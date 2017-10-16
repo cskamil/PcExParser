@@ -176,7 +176,7 @@ public abstract class AbstractLanguageParser implements LanguageParser {
         String text = annotation.getText();
 
         int codeStartIndex = text.indexOf(codeStartToken);
-        int codeEndIndex = text.indexOf(codeEndToken);
+        int codeEndIndex = text.lastIndexOf(codeEndToken);
         int helpStartIndex = text.indexOf(helpStartToken);
         int helpEndIndex = text.lastIndexOf(helpEndToken);
 
