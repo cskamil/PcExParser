@@ -37,11 +37,13 @@ public class LocalCompiler implements Compiler {
     private Response runPython(Compilable program) throws Exception {
 
         String modifiedSourceCode = program.getSourceCode();
-        Pattern p = Pattern.compile("input\\(.+\"\\)");
+        Pattern p = Pattern.compile("input\\(.+\"\\s*\\)");
         Matcher m = p.matcher(program.getSourceCode());
         while(m.find()) {
             String matchedInputString = m.group();
-            modifiedSourceCode = modifiedSourceCode.replace(matchedInputString, matchedInputString.substring(0, matchedInputString.length()-2) + "\\n" + matchedInputString.substring(matchedInputString.length()-2));
+            int lastQuotationIndex = matchedInputString.lastIndexOf("\"");
+            String replacement = matchedInputString.substring(0, lastQuotationIndex) + "\\n" + matchedInputString.substring(lastQuotationIndex);
+            modifiedSourceCode = modifiedSourceCode.replace(matchedInputString, replacement);
         }
 
         LocalRunResponse response = new LocalRunResponse();
