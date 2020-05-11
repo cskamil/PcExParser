@@ -1,12 +1,16 @@
 package json;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import entity.Activity;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JSONUtils {
 	
@@ -54,6 +58,34 @@ public class JSONUtils {
 		}
 
 		return null;
+	}
+
+	public static Activity parseActivityJSON(Path path) {
+		try (Stream<String> stream = Files.lines(path)) {
+			String jsonFileContent = stream.sequential().collect(Collectors.joining(""));
+
+			Activity activity = JSONUtils.parseStringToObject(jsonFileContent, Activity.class);
+			return activity;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	public static List<Activity> parseActivityListJSON(Path path) {
+		try (Stream<String> stream = Files.lines(path)) {
+			String jsonFileContent = stream.sequential().collect(Collectors.joining(""));
+
+			List<Activity> list = JSONUtils.parseStringToListObject(jsonFileContent, new TypeReference<List<Activity>>() {});
+			return list;
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		return Collections.emptyList();
 	}
 	
 

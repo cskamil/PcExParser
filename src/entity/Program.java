@@ -27,8 +27,7 @@ public class Program extends AbstractEntity implements Compilable {
 	private String fileName;
 	private String goalDescription;
 	private String correctOutput;
-	private List<String>
-			userInputList;
+	private List<String> userInputList;
 	private String userInput;
 	private List<Line> lineList;
 	

@@ -54,8 +54,11 @@ public class PcExParserRunner {
                             if(program.getCorrectOutput().equals(altResponse.getOutput())) {
                                 System.err.println("ALTERNATIVE OUTPUT SAME AS EXPECTED " + program.getFileName() +  " " + altProgram.getId());
                             }
+
                         });
                     }
+
+
 
                 });
 
@@ -67,19 +70,6 @@ public class PcExParserRunner {
             JSONSplit.splitJSONByActivityName(jsonFileName, language.name());
         });
 
-
-        //TODO: Write program sourceCode to file to a folder called cleanedSourceCode
-
         System.exit(0);
-    }
-
-    private static void printCleanedSourceCode(Program program) {
-        Path path = Paths.get("output/cleanedSourceCode/" + program.getLanguage().name() + "/" + program.getActivityName() + "/" + program.getFileName());
-        try {
-            Files.createDirectories(path.getParent());
-            Files.write(path, program.getSourceCode().getBytes(), StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

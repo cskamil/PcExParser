@@ -64,7 +64,7 @@ public class HackerEarthCaller implements Compiler {
     public static void main(String args[]) {
         HackerEarthData hackerearthData = new HackerEarthData();
         hackerearthData.setAsync("0");
-        hackerearthData.setLanguage("CPP");
+        hackerearthData.setLanguage("JAVA");
         hackerearthData.setTimeLimit("10");
         hackerearthData.setMemoryLimit("262144");
         hackerearthData.setSource("#include <iostream>\n" +
@@ -102,8 +102,13 @@ public class HackerEarthCaller implements Compiler {
                 "\t\tcout<<\"\\nElement present at: \"<<result1;\n" +
                 "\t}\n" +
                 "}");
-
+        hackerearthData.setSource("public class HelloWorld{\n" +
+                "\n" +
+                "     public static void main(String []args){\n" +
+                "        System.out.println(\"Hello World\");\n" +
+                "     }\n" +
+                "}");
         HackerEarthResponse result = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783").run(hackerearthData);
-        System.out.println(result);
+        System.out.println(result.getOutput());
     }
 }
