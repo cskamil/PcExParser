@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
 output/
 output/production_json_data
+.DS_Store
 ### Maven template
 target/
 pom.xml.tag
