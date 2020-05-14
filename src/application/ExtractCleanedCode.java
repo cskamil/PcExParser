@@ -19,7 +19,7 @@ public class ExtractCleanedCode {
 
     public static void main(String[] args) {
         final int[] count = {0,0};
-        try (Stream<Path> pathStream = Files.walk(Paths.get("output/production_json_data/"))) {
+        try (Stream<Path> pathStream = Files.walk(Paths.get("output/jsondata/"))) {
             pathStream.filter(path -> Files.isRegularFile(path) && path.getFileName().toString().endsWith(".json"))
                     .flatMap(path -> JSONUtils.parseActivityJSON(path).getActivityGoals().stream())
                     .forEach( program -> {
