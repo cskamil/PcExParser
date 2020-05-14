@@ -19,6 +19,7 @@ public class JSONUtils {
 		try {
 			Path path = Paths.get(fileName);
 			Files.createDirectories(path.getParent());
+			Files.deleteIfExists(path);
 			Files.write(path, jsonString.getBytes(), StandardOpenOption.CREATE);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -49,7 +50,7 @@ public class JSONUtils {
 		return null;
 	}
 
-	public static <T> T parseStringToListObject(String json, TypeReference<List<Activity>> clazz) {
+	public static <T> T parseStringToListObject(String json, TypeReference<T> clazz) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
 			return objectMapper.readValue(json, clazz);
