@@ -20,6 +20,8 @@ public class ConvertCSEdPadToPCEXSource {
                     Files.walk(Paths.get("resources/java"))
                             .filter(path -> Files.isRegularFile(path))
                             .filter(path -> !path.getFileName().toString().equals(".DS_Store"))
+                            .filter(path -> !path.getFileName().toString().contains(".md") &&
+                                    !path.getFileName().toString().equals(".gitkeep"))
                             .map(path -> path.getFileName().toString())
                             .collect(Collectors.toList());
 

@@ -21,8 +21,8 @@ def binary_search(data, key, low, high):
     elif key == data[guess]:
         '''@helpDescription(The index of the key in "data" is returned.)'''
         return data.index(key)
-        '''@helpDescription(Executes if the key has not yet been found, and "data" has not been completely searched through.)'''
     # Step 1.3: Set recursion condition
+    '''@helpDescription(Executes if the key has not yet been found, and "data" has not been completely searched through.)'''
     else:
         '''@blank(If the key is less than the value guessed, "high" is set to "guess" because the key can only be in the first half of the list.)'''
         if (key < data[guess]):

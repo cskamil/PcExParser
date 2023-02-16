@@ -22,7 +22,6 @@ public class PythonParser extends AbstractLanguageParser {
         line = line.trim();
 
         return  !line.isEmpty() &&
-                !line.startsWith("import") &&
                 !line.startsWith("'''");
     }
 
