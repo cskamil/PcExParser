@@ -63,4 +63,27 @@ public class PcExParser {
 			return activity;
 		}).collect(Collectors.toList());
 	}
+
+	//TODO: Return different type to enclose map
+	public static Map<Language,List<Activity>> parseEditorJson(String pathString) {
+		try (Stream<Path> pathStream = Files.walk(Paths.get(pathString))) {
+			System.out.println(pathStream);;
+			Map<Language, Map<String, List<Program>>> languageProgramMap = pathStream
+					.filter(path -> Files.isRegularFile(path) &&
+						!path.getFileName().toString().equals(".DS_Store") &&
+						!path.getFileName().toString().equals("__init__.py") &&
+						!path.getFileName().toString().equals(".gitkeep"))
+					.map(path -> new EditorJsonParser(path).parse())
+					.collect(Collectors.groupingBy(Program::getLanguage, Collectors.groupingBy(Program::getActivityName)));
+
+			return languageProgramMap.entrySet().stream()
+					.collect(Collectors.toMap(Map.Entry::getKey,
+							e -> mapProgramsToActivities(e.getKey(), e.getValue())));
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return Collections.emptyMap();
+	}
 }

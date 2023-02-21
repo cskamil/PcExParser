@@ -27,7 +27,7 @@ public class PcExParserRunner {
 
     public static void main(String[] args) {
         //TODO: Take path parameters from configuration file
-        Map<Language, List<Activity>> languageActivityListMap = PcExParser.parseDirectory(args[0]);
+        Map<Language, List<Activity>> languageActivityListMap = PcExParser.parseEditorJson(args[0]);
 
         //TODO: Create compiler based on configuration
         HackerEarthCaller hackerEarthCaller = new HackerEarthCaller("a1b16947a9d83080a7d3815e2590e42351e14783");
@@ -40,13 +40,11 @@ public class PcExParserRunner {
                 //printCleanedSourceCode(program);
                 TileCombinationGenerator.createAlternatives(program);
 
-
                 program.getAlternatives().forEach(alternative -> {
                     boolean runAlternative = program.getLanguage().equals(Language.JAVA) ||
                                              program.getLanguage().equals(Language.PYTHON) &&
                                                      new HashSet(alternative.getAlternativeTiles())
                                                              .equals( new HashSet(program.getBlankLineList()));
-
 
                     if(runAlternative) {
                         PcExCompiler.execute(compiler, hackerEarthCaller, alternative, (altProgram, altResponse) -> {
@@ -57,11 +55,7 @@ public class PcExParserRunner {
 
                         });
                     }
-
-
-
                 });
-
             }));
 
             String jsonFileName = args[1] + "/" + language.name() + ".json";
