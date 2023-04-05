@@ -2,7 +2,8 @@ package parser;
 
 public enum Language {
 	JAVA("java"),
-	PYTHON("py");
+	PYTHON("py"),
+  R("r");
 	
 	private String extension;
 
@@ -13,5 +14,4 @@ public enum Language {
 	public String getExtension() {
 		return extension;
 	}
-	
 }

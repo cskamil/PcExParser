@@ -42,7 +42,8 @@ public class PcExParserRunner {
 
                 program.getAlternatives().forEach(alternative -> {
                     boolean runAlternative = program.getLanguage().equals(Language.JAVA) ||
-                                             program.getLanguage().equals(Language.PYTHON) &&
+				                             program.getLanguage().equals(Language.PYTHON) ||
+				                             program.getLanguage().equals(Language.R) &&
                                                      new HashSet(alternative.getAlternativeTiles())
                                                              .equals( new HashSet(program.getBlankLineList()));
 

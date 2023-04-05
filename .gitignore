@@ -99,3 +99,8 @@ fabric.properties
 
 .idea/
 PcExParser.iml
+
+# eclipse
+.project
+.classpath
+.settings/
