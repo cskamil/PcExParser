@@ -14,6 +14,10 @@ public class AbstractEntity {
 		return id;
 	}
 
+  protected void setId(String id) {
+    this.id = id;
+  }
+
 	@Override
 	public boolean equals(Object obj) {
 		AbstractEntity entity = (AbstractEntity)obj;

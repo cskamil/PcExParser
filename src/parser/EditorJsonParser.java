@@ -52,6 +52,7 @@ public class EditorJsonParser implements LanguageParser {
         List comments = ((List) map.get("commentList"));
 
         Line line = new Line();
+        line.setId(map.get("id").toString());
         line.setNumber(Integer.parseInt(map.get("number").toString()));
         line.setContent(map.get("content").toString());
         line.setIndentLevel(
@@ -73,6 +74,7 @@ public class EditorJsonParser implements LanguageParser {
         List comments = ((List) map.get("commentList"));
 
         Line line = new Line();
+        line.setId(map.get("id").toString());
         line.setNumber(Integer.parseInt(map.get("number").toString()));
         line.setContent(map.get("content").toString());
         line.setIndentLevel(
@@ -91,6 +93,7 @@ public class EditorJsonParser implements LanguageParser {
         Map map = (Map) $;
 
         Line line = new Line();
+        line.setId(map.get("id").toString());
         line.setNumber(Integer.parseInt(map.get("number").toString()));
         line.setContent(map.get("content").toString());
         line.setIndentLevel(

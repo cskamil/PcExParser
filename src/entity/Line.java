@@ -27,6 +27,10 @@ public class Line extends AbstractEntity {
 		this.content = content;
 	}
 
+  public void setId(String id) {
+    super.setId(id);
+  }
+
 	public int getNumber() {
 		return number;
 	}
