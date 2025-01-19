@@ -195,8 +195,10 @@ public class Program extends AbstractEntity implements Compilable {
 	}
 
 	public void createUserInputString() {
-		String input = userInputList.stream().collect(Collectors.joining(",")).replace(",", " ");
-		this.userInput = input;
+		if (userInputList.size() > 0) {
+			String input = userInputList.stream().collect(Collectors.joining(",")).replace(",", " ");
+			this.userInput = input;
+		}
 	}
 
 	public void setUserInput(String input) {

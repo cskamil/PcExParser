@@ -45,7 +45,7 @@ public class PcExParserRunner {
 				                             program.getLanguage().equals(Language.PYTHON) ||
 				                             program.getLanguage().equals(Language.R) &&
                                                      new HashSet(alternative.getAlternativeTiles())
-                                                             .equals( new HashSet(program.getBlankLineList()));
+                                                             .equals(new HashSet(program.getBlankLineList()));
 
                     if(runAlternative) {
                         PcExCompiler.execute(compiler, hackerEarthCaller, alternative, (altProgram, altResponse) -> {
